@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_characters"
+        android:icon="@drawable/ic_people"
+        android:title="@string/tab_characters" />
+    <item
+        android:id="@+id/nav_fruits"
+        android:icon="@drawable/ic_fruit"
+        android:title="@string/tab_fruits" />
+    <item
+        android:id="@+id/nav_sagas"
+        android:icon="@drawable/ic_flag"
+        android:title="@string/tab_sagas" />
+    <item
+        android:id="@+id/nav_tools"
+        android:icon="@drawable/ic_functions"
+        android:title="@string/tab_tools" />
+</menu>
