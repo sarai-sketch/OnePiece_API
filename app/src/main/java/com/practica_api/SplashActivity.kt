@@ -6,6 +6,7 @@ import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStarted
 import com.practica_api.databinding.ActivitySplashBinding
 import com.practica_api.di.AppContainer
 import kotlinx.coroutines.coroutineScope
@@ -41,7 +42,8 @@ class SplashActivity : AppCompatActivity() {
 
             // Si la red es lenta no bloqueamos: cada pantalla reintenta sola.
             withTimeoutOrNull(MAX_WAIT_MS) { preload.join() }
-            openMain()
+            // Si la app pasó a segundo plano durante la carga, esperamos a volver antes de abrir la principal.
+            lifecycle.withStarted { openMain() }
         }
     }
 

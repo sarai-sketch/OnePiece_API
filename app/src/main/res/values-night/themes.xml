@@ -21,7 +21,7 @@
 
     <style name="Theme.Practica_API.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/red_deep</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.Practica_API</item>
     </style>
 </resources>
