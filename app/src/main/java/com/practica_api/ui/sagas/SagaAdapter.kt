@@ -5,10 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.practica_api.R
 import com.practica_api.databinding.ItemSagaBinding
 import com.practica_api.domain.model.Saga
 
-class SagaAdapter : ListAdapter<Saga, SagaAdapter.ViewHolder>(SagaDiff) {
+class SagaAdapter(
+    private val onClick: ((Saga) -> Unit)? = null,
+    private val onFavoriteClick: ((Saga) -> Unit)? = null,
+    private var favoritosIds: Set<String> = emptySet(),
+) : ListAdapter<Saga, SagaAdapter.ViewHolder>(SagaDiff) {
+
+    fun updateFavoritos(nuevosIds: Set<String>) {
+        favoritosIds = nuevosIds
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(private val binding: ItemSagaBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -19,6 +29,14 @@ class SagaAdapter : ListAdapter<Saga, SagaAdapter.ViewHolder>(SagaDiff) {
             chaptersText.text = "Capítulos: ${item.chapters}"
             volumesText.text = "Tomos: ${item.volumes}"
             episodesText.text = "Episodios: ${item.episodes}"
+
+            val isFav = favoritosIds.contains("SAGA_${item.id}")
+            btnFavorite.setImageResource(
+                if (isFav) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            )
+            btnFavorite.setOnClickListener { onFavoriteClick?.invoke(item) }
+
+            root.setOnClickListener { onClick?.invoke(item) }
         }
     }
 

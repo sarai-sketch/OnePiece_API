@@ -7,18 +7,26 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.practica_api.R
 import com.practica_api.databinding.ItemCharacterBinding
 import com.practica_api.domain.model.OnePieceCharacter
 
 class CharacterAdapter(
     private val onClick: (OnePieceCharacter) -> Unit,
+    private val onFavoriteClick: ((OnePieceCharacter) -> Unit)? = null,
+    private var favoritosIds: Set<String> = emptySet(),
 ) : ListAdapter<OnePieceCharacter, CharacterAdapter.ViewHolder>(CharacterDiff) {
+
+    fun updateFavoritos(nuevosIds: Set<String>) {
+        favoritosIds = nuevosIds
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(private val binding: ItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: OnePieceCharacter) = with(binding) {
-            avatar.text = item.name.first().uppercase()
+            avatar.text = item.name.firstOrNull()?.uppercase() ?: "P"
             nameText.text = item.name
             subtitleText.text = listOfNotNull(item.job, item.crew?.name)
                 .joinToString(" · ")
@@ -26,7 +34,12 @@ class CharacterAdapter(
             bountyText.text = item.bountyLabel() ?: "Sin recompensa registrada"
             statusText.text = item.statusLabel()
 
-            // La API de personajes no trae foto; si el personaje tiene Fruta del Diablo, mostramos su imagen.
+            val isFav = favoritosIds.contains("CHAR_${item.id}")
+            btnFavorite.setImageResource(
+                if (isFav) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            )
+            btnFavorite.setOnClickListener { onFavoriteClick?.invoke(item) }
+
             val imageUrl = item.fruit?.imageUrl
             fruitImage.isVisible = imageUrl != null
             if (imageUrl != null) {

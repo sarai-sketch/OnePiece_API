@@ -12,7 +12,14 @@ import com.practica_api.domain.model.DevilFruit
 
 class FruitAdapter(
     private val onClick: (DevilFruit) -> Unit,
+    private val onFavoriteClick: ((DevilFruit) -> Unit)? = null,
+    private var favoritosIds: Set<String> = emptySet(),
 ) : ListAdapter<DevilFruit, FruitAdapter.ViewHolder>(FruitDiff) {
+
+    fun updateFavoritos(nuevosIds: Set<String>) {
+        favoritosIds = nuevosIds
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(private val binding: ItemFruitBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -28,6 +35,13 @@ class FruitAdapter(
             romanText.text = item.romanName.orEmpty()
             typeText.text = item.type
             descriptionText.text = item.description ?: "Sin descripción."
+
+            val isFav = favoritosIds.contains("FRUIT_${item.id}")
+            btnFavorite.setImageResource(
+                if (isFav) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            )
+            btnFavorite.setOnClickListener { onFavoriteClick?.invoke(item) }
+
             root.setOnClickListener { onClick(item) }
         }
     }

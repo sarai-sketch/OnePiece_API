@@ -1,6 +1,9 @@
 package com.practica_api.data.remote.mapper
 
 import com.practica_api.core.cleaned
+import com.practica_api.data.local.CharacterCacheEntity
+import com.practica_api.data.local.FruitCacheEntity
+import com.practica_api.data.local.SagaCacheEntity
 import com.practica_api.data.remote.dto.CharacterDto
 import com.practica_api.data.remote.dto.CrewDto
 import com.practica_api.data.remote.dto.FruitDto
@@ -45,11 +48,82 @@ fun SagaDto.toDomain() = Saga(
     episodes = episodes.toRange(),
 )
 
+// Mappers de Caché para soporte Offline
+fun CharacterCacheEntity.toDomain() = OnePieceCharacter(
+    id = id,
+    name = name,
+    job = job,
+    height = height,
+    age = age,
+    bounty = bounty,
+    crew = crewName?.let { Crew(name = it, romanName = null, isYonko = isYonko == true) },
+    fruit = fruitName?.let {
+        DevilFruit(
+            id = 0,
+            name = it,
+            romanName = null,
+            type = "Desconocido",
+            description = null,
+            imageUrl = fruitImageUrl
+        )
+    },
+    status = status.toCharacterStatus()
+)
+
+fun OnePieceCharacter.toCacheEntity() = CharacterCacheEntity(
+    id = id,
+    name = name,
+    job = job,
+    height = height,
+    age = age,
+    bounty = bounty,
+    crewName = crew?.name,
+    isYonko = crew?.isYonko,
+    fruitName = fruit?.name,
+    fruitImageUrl = fruit?.imageUrl,
+    status = status.name
+)
+
+fun FruitCacheEntity.toDomain() = DevilFruit(
+    id = id,
+    name = name,
+    romanName = romanName,
+    type = type,
+    description = description,
+    imageUrl = imageUrl
+)
+
+fun DevilFruit.toCacheEntity() = FruitCacheEntity(
+    id = id,
+    name = name,
+    romanName = romanName,
+    type = type,
+    description = description,
+    imageUrl = imageUrl
+)
+
+fun SagaCacheEntity.toDomain() = Saga(
+    id = id,
+    number = number,
+    title = title,
+    chapters = chapters,
+    volumes = volumes,
+    episodes = episodes
+)
+
+fun Saga.toCacheEntity() = SagaCacheEntity(
+    id = id,
+    number = number,
+    title = title,
+    chapters = chapters,
+    volumes = volumes,
+    episodes = episodes
+)
+
 private fun String?.toCharacterStatus(): CharacterStatus = when (this?.trim()?.lowercase()) {
-    "living", "vivant", "alive" -> CharacterStatus.ALIVE
+    "living", "vivant", "alive", "alive" -> CharacterStatus.ALIVE
     "deceased", "mort", "dead" -> CharacterStatus.DECEASED
     else -> CharacterStatus.UNKNOWN
 }
 
-/** La API devuelve rangos en francés ("1 à 100"). */
 private fun String?.toRange(): String = cleaned()?.replace(" à ", " – ") ?: "—"

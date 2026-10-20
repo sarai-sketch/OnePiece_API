@@ -91,16 +91,33 @@
                     android:textColor="@color/red_primary" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/statusText"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="@color/red_on_container" />
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnFavorite"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Favorito"
+                    android:padding="4dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_favorite_border" />
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/red_on_container" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

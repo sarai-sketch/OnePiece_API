@@ -13,6 +13,10 @@
         android:icon="@drawable/ic_flag"
         android:title="@string/tab_sagas" />
     <item
+        android:id="@+id/nav_favorites"
+        android:icon="@drawable/ic_favorite"
+        android:title="@string/tab_favorites" />
+    <item
         android:id="@+id/nav_tools"
         android:icon="@drawable/ic_functions"
         android:title="@string/tab_tools" />

@@ -13,12 +13,15 @@ de la Gran Línea</string>
     <string name="tab_characters">Personajes</string>
     <string name="tab_fruits">Frutas</string>
     <string name="tab_sagas">Sagas</string>
+    <string name="tab_favorites">Favoritos</string>
     <string name="tab_tools">Laboratorio</string>
 
     <string name="search_characters">Buscar personaje, cargo, tripulación o fruta</string>
     <string name="search_fruits">Buscar fruta o tipo</string>
-    <string name="search_sagas">Buscar saga</string>
+    <string name="search_sagas">Buscar saga o episodios</string>
+    <string name="search_favorites">Buscar en tus favoritos guardados</string>
     <string name="empty_results">No hay resultados para tu búsqueda.</string>
+    <string name="empty_favorites">Aún no tienes ningún favorito guardado.</string>
     <string name="retry">Reintentar</string>
     <string name="close">Cerrar</string>
     <string name="error_required">Campo obligatorio</string>

@@ -8,7 +8,9 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.practica_api.databinding.ActivityMainBinding
+import com.practica_api.di.AppContainer
 import com.practica_api.ui.characters.CharactersFragment
+import com.practica_api.ui.favoritos.FavoritosFragment
 import com.practica_api.ui.fruits.FruitsFragment
 import com.practica_api.ui.sagas.SagasFragment
 import com.practica_api.ui.tools.ToolsFragment
@@ -19,10 +21,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppContainer.init(applicationContext)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // targetSdk 35+ dibuja la app edge-to-edge: damos espacio a la barra de estado.
         ViewCompat.setOnApplyWindowInsetsListener(binding.header) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(top = bars.top)
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         val fragment: Fragment = when (itemId) {
             R.id.nav_fruits -> FruitsFragment()
             R.id.nav_sagas -> SagasFragment()
+            R.id.nav_favorites -> FavoritosFragment()
             R.id.nav_tools -> ToolsFragment()
             else -> CharactersFragment()
         }
@@ -60,6 +64,7 @@ class MainActivity : AppCompatActivity() {
             when (itemId) {
                 R.id.nav_fruits -> R.string.tab_fruits
                 R.id.nav_sagas -> R.string.tab_sagas
+                R.id.nav_favorites -> R.string.tab_favorites
                 R.id.nav_tools -> R.string.tab_tools
                 else -> R.string.tab_characters
             },
