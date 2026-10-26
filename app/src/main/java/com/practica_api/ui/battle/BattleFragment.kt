@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -40,6 +41,7 @@ class BattleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupCrewDropdown()
+        setupCaptainTextWatcher()
 
         binding.btnStartBattle.setOnClickListener { onStartBattle() }
 
@@ -78,6 +80,41 @@ class BattleFragment : Fragment() {
             binding.captainNameInput.setText(seleccionada.capitanNombre)
             recompensaActual = seleccionada.recompensaEstimada
             binding.bountyDisplay.text = getString(R.string.battle_bounty_format, recompensaActual)
+        }
+    }
+
+    private fun setupCaptainTextWatcher() {
+        binding.captainNameInput.doAfterTextChanged { editable ->
+            val text = editable?.toString()?.trim()?.lowercase().orEmpty()
+            if (text.isEmpty()) return@doAfterTextChanged
+
+            val recompensaCalculada = when {
+                text.contains("roger") -> 5564800000L
+                text.contains("shirohige") || text.contains("barbablanca") || text.contains("whitebeard") -> 5046000000L
+                text.contains("kaido") -> 4611100000L
+                text.contains("linlin") || text.contains("big mom") -> 4388000000L
+                text.contains("shanks") -> 4048900000L
+                text.contains("teach") || text.contains("barbanegra") || text.contains("blackbeard") -> 3996000000L
+                text.contains("mihawk") -> 3590000000L
+                text.contains("buggy") -> 3189000000L
+                text.contains("luffy") -> 3000000000L
+                text.contains("law") -> 3000000000L
+                text.contains("kid") -> 3000000000L
+                text.contains("crocodile") -> 1965000000L
+                text.contains("hancock") || text.contains("boa") -> 1659000000L
+                text.contains("king") -> 1390000000L
+                text.contains("marco") -> 1374000000L
+                text.contains("zoro") -> 1111000000L
+                text.contains("jinbe") -> 1100000000L
+                text.contains("katakuri") -> 1057000000L
+                text.contains("sanji") -> 1032000000L
+                else -> null
+            }
+
+            if (recompensaCalculada != null) {
+                recompensaActual = recompensaCalculada
+                binding.bountyDisplay.text = getString(R.string.battle_bounty_format, recompensaActual)
+            }
         }
     }
 
