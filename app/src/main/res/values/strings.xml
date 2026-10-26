@@ -14,6 +14,7 @@ de la Gran Línea</string>
     <string name="tab_fruits">Frutas</string>
     <string name="tab_sagas">Sagas</string>
     <string name="tab_favorites">Favoritos</string>
+    <string name="tab_battle">Batalla Naval</string>
     <string name="tab_tools">Laboratorio</string>
 
     <string name="search_characters">Buscar personaje, cargo, tripulación o fruta</string>
@@ -44,4 +45,13 @@ de la Gran Línea</string>
     <string name="wealth_spend_hint">Gasto diario (ej. 1000)</string>
     <string name="compare">Comparar</string>
     <string name="wealth_no_result">La API no devolvió una comparación.</string>
+
+    <string name="battle_title">⚔️ Simulador de Batalla Naval (SQLite Cloud API)</string>
+    <string name="battle_subtitle">Selecciona una banda pirata o personaliza tu flota para luchar en el Grand Line</string>
+    <string name="battle_select_crew">Selecciona tu Banda Pirata</string>
+    <string name="battle_ship_hint">Nombre de tu barco</string>
+    <string name="battle_captain_hint">Capitán al mando</string>
+    <string name="battle_bounty_label">Recompensa Estimada</string>
+    <string name="battle_bounty_format">Recompensa Estimada: %,d Berries</string>
+    <string name="battle_start_button">⚔️ ¡LUCHAR CONTRA RIVAL EN ALTA MAR!</string>
 </resources>

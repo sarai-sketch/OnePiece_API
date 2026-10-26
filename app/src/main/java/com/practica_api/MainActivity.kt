@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.practica_api.databinding.ActivityMainBinding
 import com.practica_api.di.AppContainer
+import com.practica_api.ui.battle.BattleFragment
 import com.practica_api.ui.characters.CharactersFragment
 import com.practica_api.ui.favoritos.FavoritosFragment
 import com.practica_api.ui.fruits.FruitsFragment
 import com.practica_api.ui.sagas.SagasFragment
-import com.practica_api.ui.tools.ToolsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_fruits -> FruitsFragment()
             R.id.nav_sagas -> SagasFragment()
             R.id.nav_favorites -> FavoritosFragment()
-            R.id.nav_tools -> ToolsFragment()
+            R.id.nav_battle -> BattleFragment()
             else -> CharactersFragment()
         }
         supportFragmentManager.commit {
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_fruits -> R.string.tab_fruits
                 R.id.nav_sagas -> R.string.tab_sagas
                 R.id.nav_favorites -> R.string.tab_favorites
-                R.id.nav_tools -> R.string.tab_tools
+                R.id.nav_battle -> R.string.tab_battle
                 else -> R.string.tab_characters
             },
         )

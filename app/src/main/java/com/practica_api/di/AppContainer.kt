@@ -3,12 +3,13 @@ package com.practica_api.di
 import android.content.Context
 import com.practica_api.data.local.OnePieceDatabase
 import com.practica_api.data.remote.client.RetrofitClient
+import com.practica_api.data.repository.BattleCloudRepository
 import com.practica_api.data.repository.FavoritosRepository
 import com.practica_api.data.repository.NewtonRepository
 import com.practica_api.data.repository.OnePieceRepository
 import com.practica_api.data.repository.WealthRepository
 
-/** Contenedor de dependencias manual: arma los repositorios con los servicios de RetrofitClient y Room. */
+/** Contenedor de dependencias manual: arma los repositorios con RetrofitClient y Room. */
 object AppContainer {
 
     @Volatile
@@ -41,6 +42,10 @@ object AppContainer {
 
     fun getFavoritosRepository(context: Context): FavoritosRepository {
         return FavoritosRepository(requireDb(context).favoritoDao())
+    }
+
+    val battleCloudRepository: BattleCloudRepository by lazy {
+        BattleCloudRepository(RetrofitClient.sqliteCloudService)
     }
 
     val newtonRepository: NewtonRepository by lazy { NewtonRepository(RetrofitClient.newtonService) }
