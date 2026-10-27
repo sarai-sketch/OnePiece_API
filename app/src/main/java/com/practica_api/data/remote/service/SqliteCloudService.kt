@@ -1,9 +1,10 @@
 package com.practica_api.data.remote.service
 
-import com.practica_api.data.remote.dto.EdgeFunctionEliminarFavoritoRequest
-import com.practica_api.data.remote.dto.EdgeFunctionFavoritoRequest
+import com.practica_api.data.remote.dto.EliminarFavoritoRequest
+import com.practica_api.data.remote.dto.FavoritoRequest
 import com.practica_api.data.remote.dto.SqliteCloudRequest
 import com.practica_api.data.remote.dto.SqliteCloudResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -18,16 +19,16 @@ interface SqliteCloudService {
     ): SqliteCloudResponse
 
     @POST("v2/functions/function-1")
-    suspend fun invokeEdgeFunction(
+    suspend fun agregarFavorito(
         @Header("Authorization") bearerToken: String,
         @Query("limit") limit: Int = 10,
-        @Body request: EdgeFunctionFavoritoRequest
-    ): SqliteCloudResponse
+        @Body favorito: FavoritoRequest
+    ): Response<Any>
 
     @POST("v2/functions/eliminar-favorito")
-    suspend fun invokeEliminarFavoritoEdgeFunction(
+    suspend fun eliminarFavorito(
         @Header("Authorization") bearerToken: String,
         @Query("limit") limit: Int = 10,
-        @Body request: EdgeFunctionEliminarFavoritoRequest
-    ): SqliteCloudResponse
+        @Body request: EliminarFavoritoRequest
+    ): Response<Any>
 }

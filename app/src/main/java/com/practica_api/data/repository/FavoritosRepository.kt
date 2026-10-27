@@ -1,27 +1,35 @@
 package com.practica_api.data.repository
 
-import com.practica_api.data.local.FavoritoDao
 import com.practica_api.data.local.FavoritoEntity
 import com.practica_api.data.remote.client.RetrofitClient
-import com.practica_api.data.remote.dto.EdgeFunctionEliminarFavoritoRequest
-import com.practica_api.data.remote.dto.EdgeFunctionFavoritoRequest
-import com.practica_api.data.remote.dto.SqliteCloudResponse
+import com.practica_api.data.remote.dto.EliminarFavoritoRequest
+import com.practica_api.data.remote.dto.FavoritoRequest
+import com.practica_api.data.remote.service.SqliteCloudService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class FavoritosRepository(private val dao: FavoritoDao) {
+class FavoritosRepository(
+    private val service: SqliteCloudService = RetrofitClient.edgeFunctionService,
+) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val _favoritos = MutableStateFlow<List<FavoritoEntity>>(emptyList())
+    private val _favoritosIds = MutableStateFlow<Set<String>>(emptySet())
 
-    fun observarFavoritos(): Flow<List<FavoritoEntity>> = dao.observarFavoritos()
+    val favoritos: StateFlow<List<FavoritoEntity>> = _favoritos.asStateFlow()
+    val favoritosIds: StateFlow<Set<String>> = _favoritosIds.asStateFlow()
 
-    fun observarIds(): Flow<Set<String>> = dao.observarIdsFavoritos().map { it.toSet() }
+    fun observarFavoritos(): Flow<List<FavoritoEntity>> = favoritos
 
-    suspend fun alternarFavorito(
+    fun observarIds(): Flow<Set<String>> = favoritosIds
+
+    fun alternarFavorito(
         idKey: String,
         originalId: Int,
         tipo: String,
@@ -30,12 +38,26 @@ class FavoritosRepository(private val dao: FavoritoDao) {
         imagenUrl: String? = null,
         detalleInfo: String? = null,
     ) {
-        if (dao.esFavorito(idKey)) {
-            dao.eliminarPorIdKey(idKey)
+        val actualIds = _favoritosIds.value.toMutableSet()
+        val esta = actualIds.contains(idKey)
+
+        if (esta) {
+            actualIds.remove(idKey)
+            _favoritosIds.value = actualIds
+            _favoritos.value = _favoritos.value.filterNot { it.idKey == idKey }
+
             scope.launch {
-                eliminarEnEdgeFunction(idKey)
+                try {
+                    service.eliminarFavorito(
+                        bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
+                        request = EliminarFavoritoRequest(id_key = idKey),
+                    )
+                } catch (_: Exception) {}
             }
         } else {
+            actualIds.add(idKey)
+            _favoritosIds.value = actualIds
+
             val entity = FavoritoEntity(
                 idKey = idKey,
                 originalId = originalId,
@@ -45,74 +67,41 @@ class FavoritosRepository(private val dao: FavoritoDao) {
                 imagenUrl = imagenUrl,
                 detalleInfo = detalleInfo,
             )
-            dao.insertar(entity)
+            _favoritos.value = listOf(entity) + _favoritos.value.filterNot { it.idKey == idKey }
 
             scope.launch {
-                enviarAEdgeFunction(
-                    idKey = idKey,
-                    originalId = originalId,
-                    tipo = tipo,
-                    nombre = nombre,
-                    subtitulo = subtitulo,
-                    imagenUrl = imagenUrl,
-                    detalleInfo = detalleInfo,
-                )
+                try {
+                    val req = FavoritoRequest(
+                        id_key = idKey,
+                        original_id = originalId,
+                        tipo = tipo,
+                        nombre = nombre,
+                        subtitulo = subtitulo,
+                        imagen_url = imagenUrl.orEmpty(),
+                        detalle_info = detalleInfo.orEmpty(),
+                    )
+                    service.agregarFavorito(
+                        bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
+                        favorito = req,
+                    )
+                } catch (_: Exception) {}
             }
         }
     }
 
-    suspend fun eliminar(idKey: String) {
-        dao.eliminarPorIdKey(idKey)
+    fun eliminar(idKey: String) {
+        val actualIds = _favoritosIds.value.toMutableSet()
+        actualIds.remove(idKey)
+        _favoritosIds.value = actualIds
+        _favoritos.value = _favoritos.value.filterNot { it.idKey == idKey }
+
         scope.launch {
-            eliminarEnEdgeFunction(idKey)
-        }
-    }
-
-    suspend fun enviarAEdgeFunction(
-        idKey: String,
-        originalId: Int,
-        tipo: String,
-        nombre: String,
-        subtitulo: String? = null,
-        imagenUrl: String? = null,
-        detalleInfo: String? = null,
-        limit: Int = 10,
-    ): Result<SqliteCloudResponse> {
-        return try {
-            val req = EdgeFunctionFavoritoRequest(
-                id_key = idKey,
-                original_id = originalId,
-                tipo = tipo,
-                nombre = nombre,
-                subtitulo = subtitulo,
-                imagen_url = imagenUrl,
-                detalle_info = detalleInfo,
-            )
-            val response = RetrofitClient.edgeFunctionService.invokeEdgeFunction(
-                bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
-                limit = limit,
-                request = req,
-            )
-            Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun eliminarEnEdgeFunction(
-        idKey: String,
-        limit: Int = 10,
-    ): Result<SqliteCloudResponse> {
-        return try {
-            val req = EdgeFunctionEliminarFavoritoRequest(id_key = idKey)
-            val response = RetrofitClient.edgeFunctionService.invokeEliminarFavoritoEdgeFunction(
-                bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
-                limit = limit,
-                request = req,
-            )
-            Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
+            try {
+                service.eliminarFavorito(
+                    bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
+                    request = EliminarFavoritoRequest(id_key = idKey),
+                )
+            } catch (_: Exception) {}
         }
     }
 }

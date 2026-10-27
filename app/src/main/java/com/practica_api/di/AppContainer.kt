@@ -1,7 +1,6 @@
 package com.practica_api.di
 
 import android.content.Context
-import com.practica_api.data.local.OnePieceDatabase
 import com.practica_api.data.remote.client.RetrofitClient
 import com.practica_api.data.repository.BattleCloudRepository
 import com.practica_api.data.repository.FavoritosRepository
@@ -9,40 +8,22 @@ import com.practica_api.data.repository.NewtonRepository
 import com.practica_api.data.repository.OnePieceRepository
 import com.practica_api.data.repository.WealthRepository
 
-/** Contenedor de dependencias manual: arma los repositorios con RetrofitClient y Room. */
+/** Contenedor de dependencias manual: arma los repositorios exclusivamente con RetrofitClient. */
 object AppContainer {
 
-    @Volatile
-    private var database: OnePieceDatabase? = null
-
     fun init(context: Context) {
-        if (database == null) {
-            synchronized(this) {
-                if (database == null) {
-                    database = OnePieceDatabase.obtener(context.applicationContext)
-                }
-            }
-        }
-    }
-
-    private fun requireDb(context: Context): OnePieceDatabase {
-        init(context)
-        return database!!
+        // Inicializador de contenedor si se requiere
     }
 
     val onePieceRepository: OnePieceRepository by lazy {
-        val db = database
-        OnePieceRepository(
-            service = RetrofitClient.onePieceService,
-            characterCacheDao = db?.characterCacheDao(),
-            fruitCacheDao = db?.fruitCacheDao(),
-            sagaCacheDao = db?.sagaCacheDao()
-        )
+        OnePieceRepository(RetrofitClient.onePieceService)
     }
 
-    fun getFavoritosRepository(context: Context): FavoritosRepository {
-        return FavoritosRepository(requireDb(context).favoritoDao())
+    val favoritosRepository: FavoritosRepository by lazy {
+        FavoritosRepository(RetrofitClient.edgeFunctionService)
     }
+
+    fun getFavoritosRepository(context: Context? = null): FavoritosRepository = favoritosRepository
 
     val battleCloudRepository: BattleCloudRepository by lazy {
         BattleCloudRepository(RetrofitClient.sqliteCloudService)
