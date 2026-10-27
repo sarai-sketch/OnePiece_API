@@ -20,3 +20,7 @@ data class EdgeFunctionFavoritoRequest(
     val imagen_url: String? = null,
     val detalle_info: String? = null
 )
+
+data class EdgeFunctionEliminarFavoritoRequest(
+    val id_key: String
+)

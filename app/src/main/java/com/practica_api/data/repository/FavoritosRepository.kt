@@ -3,6 +3,7 @@ package com.practica_api.data.repository
 import com.practica_api.data.local.FavoritoDao
 import com.practica_api.data.local.FavoritoEntity
 import com.practica_api.data.remote.client.RetrofitClient
+import com.practica_api.data.remote.dto.EdgeFunctionEliminarFavoritoRequest
 import com.practica_api.data.remote.dto.EdgeFunctionFavoritoRequest
 import com.practica_api.data.remote.dto.SqliteCloudResponse
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +32,9 @@ class FavoritosRepository(private val dao: FavoritoDao) {
     ) {
         if (dao.esFavorito(idKey)) {
             dao.eliminarPorIdKey(idKey)
+            scope.launch {
+                eliminarEnEdgeFunction(idKey)
+            }
         } else {
             val entity = FavoritoEntity(
                 idKey = idKey,
@@ -57,7 +61,12 @@ class FavoritosRepository(private val dao: FavoritoDao) {
         }
     }
 
-    suspend fun eliminar(idKey: String) = dao.eliminarPorIdKey(idKey)
+    suspend fun eliminar(idKey: String) {
+        dao.eliminarPorIdKey(idKey)
+        scope.launch {
+            eliminarEnEdgeFunction(idKey)
+        }
+    }
 
     suspend fun enviarAEdgeFunction(
         idKey: String,
@@ -80,6 +89,23 @@ class FavoritosRepository(private val dao: FavoritoDao) {
                 detalle_info = detalleInfo,
             )
             val response = RetrofitClient.edgeFunctionService.invokeEdgeFunction(
+                bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
+                limit = limit,
+                request = req,
+            )
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun eliminarEnEdgeFunction(
+        idKey: String,
+        limit: Int = 10,
+    ): Result<SqliteCloudResponse> {
+        return try {
+            val req = EdgeFunctionEliminarFavoritoRequest(id_key = idKey)
+            val response = RetrofitClient.edgeFunctionService.invokeEliminarFavoritoEdgeFunction(
                 bearerToken = RetrofitClient.SQLITE_CLOUD_API_KEY,
                 limit = limit,
                 request = req,
