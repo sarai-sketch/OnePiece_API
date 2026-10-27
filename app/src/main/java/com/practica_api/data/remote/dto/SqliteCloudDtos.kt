@@ -10,3 +10,13 @@ data class SqliteCloudResponse(
     val data: List<Map<String, Any?>>? = null,
     val error: String? = null
 )
+
+data class EdgeFunctionFavoritoRequest(
+    val id_key: String,
+    val original_id: Int,
+    val tipo: String,
+    val nombre: String,
+    val subtitulo: String? = null,
+    val imagen_url: String? = null,
+    val detalle_info: String? = null
+)
