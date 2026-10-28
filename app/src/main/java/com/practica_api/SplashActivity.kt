@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
+import com.google.firebase.auth.FirebaseAuth
 import com.practica_api.databinding.ActivitySplashBinding
 import com.practica_api.di.AppContainer
 import kotlinx.coroutines.coroutineScope
@@ -15,15 +16,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Pantalla de bienvenida: presenta la app con una animación y, mientras tanto,
- * precarga las listas de One Piece para que la pantalla principal abra al instante.
+ * Pantalla de bienvenida: presenta la app con una animación y verifica
+ * si el usuario tiene una sesión activa en Firebase para enviarlo al Login o a la pantalla Principal.
  */
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Debe ir antes de super.onCreate: toma el relevo de la splash del sistema (Android 12+ y anteriores).
         installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
@@ -34,16 +34,13 @@ class SplashActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val preload = launch { preloadData() }
 
-            // Mensajes de carga mientras se trabaja en segundo plano (mínimo ~2 s de bienvenida).
             resources.getStringArray(R.array.splash_messages).forEach { message ->
                 binding.statusText.text = message
                 delay(MESSAGE_DELAY_MS)
             }
 
-            // Si la red es lenta no bloqueamos: cada pantalla reintenta sola.
             withTimeoutOrNull(MAX_WAIT_MS) { preload.join() }
-            // Si la app pasó a segundo plano durante la carga, esperamos a volver antes de abrir la principal.
-            lifecycle.withStarted { openMain() }
+            lifecycle.withStarted { openNextScreen() }
         }
     }
 
@@ -69,8 +66,14 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun openMain() {
-        startActivity(Intent(this, MainActivity::class.java))
+    private fun openNextScreen() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val destination = if (user != null) {
+            MainActivity::class.java
+        } else {
+            LoginActivity::class.java
+        }
+        startActivity(Intent(this, destination))
         finish()
     }
 

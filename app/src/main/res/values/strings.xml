@@ -27,6 +27,16 @@ de la Gran Línea</string>
     <string name="close">Cerrar</string>
     <string name="error_required">Campo obligatorio</string>
 
+    <string name="login_title">Bienvenido a Grand Line Dex</string>
+    <string name="login_subtitle">Autentícate con tu cuenta para ingresar al Grand Line</string>
+    <string name="email_hint">Correo Electrónico</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="register_button">Crear Cuenta Pirata</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="login_success">¡Bienvenido a bordo!</string>
+    <string name="register_success">¡Cuenta creada con éxito en Firebase!</string>
+
     <string name="newton_title">Cálculo simbólico</string>
     <string name="newton_subtitle">Newton API · resuelve expresiones matemáticas</string>
     <string name="op_derive">Derivar</string>
